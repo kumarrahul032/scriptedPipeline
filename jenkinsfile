@@ -1,0 +1,67 @@
+node('master')
+
+
+{
+ 
+  
+ stage('continuous download')
+
+ 
+ {
+  
+  
+   git 'https://github.com/kumarrahul032/maven.git'
+
+ 
+ }
+
+  
+ stage('continuous Build')
+
+ 
+ {
+
+   sh 'mvn package'
+
+ 
+ }
+ 
+  
+ stage('continuous deployment')
+
+ 
+ {
+ 
+  
+   deploy adapters: [tomcat9(credentialsId: '77dd72d3-7971-4701-a362-d6dcbfda2e26', path: '', url: 'http://172.31.30.94:8080')], contextPath: 'qaapp', war: '**\\*.war'
+
+ 
+ }
+
+  
+ stage('continuous Testing')
+
+
+  {
+   
+  
+   git 'https://github.com/kumarrahul032/FunctionalTesting.git' 
+     sh 'java -jar /home/ubuntu/.jenkins/workspace/\'pipeline script test\'/testing.jar'
+
+
+  }
+
+
+ stage('continuous Delivery')
+
+
+  {
+     
+  
+   deploy adapters: [tomcat9(credentialsId: '77dd72d3-7971-4701-a362-d6dcbfda2e26', path: '', url: 'http://172.31.21.91:8080')], contextPath: 'qaapp', war: '**\\*.war'
+  
+  
+  }
+
+
+}
