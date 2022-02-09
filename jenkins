@@ -1,0 +1,49 @@
+node('master')
+
+{
+    
+   stage('continuousDownload')
+
+   {
+    
+       git 'https://github.com/kumarrahul032/maven.git'
+ 
+   }
+
+   stage('continuousBuild')
+
+   {
+      
+       sh 'mvn package'
+ 
+  }
+
+   stage('continuousDeployment')
+
+   {
+     
+       sh 'scp /home/ubuntu/.jenkins/workspace/Devlop/webapp/target/webapp.war ubuntu@172.31.24.150:/var/lib/tomcat9/webapps/testapp.war'
+
+   }
+   
+   stage('continuousTesting')
+
+   {
+
+       git 'https://github.com/kumarrahul032/FunctionalTesting.git'
+
+ 
+     
+ sh '''java -jar /home/ubuntu/.jenkins/workspace/Devlop/testing.jar
+'''
+
+   }
+   
+   stage('continuousDelivery')
+
+   {
+
+       sh 'scp /home/ubuntu/.jenkins/workspace/Devlop/webapp/target/webapp.war ubuntu@172.31.24.3:/var/lib/tomcat9/webapps/prodapp.war'
+   }
+
+}
