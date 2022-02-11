@@ -1,0 +1,45 @@
+pipeline
+{
+    agent any
+    stages
+    {
+        stage('continuousDownload')
+        {
+          steps
+          {
+             git 'https://github.com/kumarrahul032/maven.git'
+          }
+        }
+        stage('continuousBuild')
+        {
+            steps
+            {
+               sh 'mvn package' 
+            }
+        }
+        stage('continuousDeployment')
+        {
+            steps
+            {
+            sh 'scp  /home/ubuntu/.jenkins/workspace/projectpipeline/webapp/target/webapp.war ubuntu@172.31.14.79:/var/lib/tomcat9/webapps/testapp.war'
+            }
+        }
+        stage('continuousTesting')
+        {
+            steps
+            {
+                git 'https://github.com/kumarrahul032/FunctionalTesting.git'
+                
+                sh '''java -jar /home/ubuntu/.jenkins/workspace/projectpipeline/testing.jar
+'''
+            }
+        }
+        stage('continuousDelivery')
+        {
+            steps
+            {
+               sh 'scp  /home/ubuntu/.jenkins/workspace/projectpipeline/webapp/target/webapp.war ubuntu@172.31.5.253:/var/lib/tomcat9/webapps/prodapp.war'  
+            }
+        }
+    }
+}
